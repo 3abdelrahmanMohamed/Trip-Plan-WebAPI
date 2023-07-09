@@ -7,19 +7,22 @@ function Home() {
 
 
     const TodayDate = moment().format("MM-DD-YYYY")
-  
-    console.log(TodayDate)
+
     const [StartDate, setStartDate]  = useState(TodayDate);
     const [EndDate, SetEndDate] = useState('');
     const [Budget, SetBudget] = useState('10000');
     const [Location, SetLocation] = useState('Any');
-    const [daysBetween, SetDaysBetween] = useState(2);
-    console.log(daysBetween)
+    const [daysBetween, SetDaysBetween] = useState(3);
+    
     const [TripID, setTripID] = useState(0);
 
+    const dateConverter = (StartDate, EndDate) => {
+        const newStartDate= new Date(StartDate);
+        const newEndDate=new Date(EndDate);
+        let result=moment(newStartDate).diff(newEndDate,'days')
+        return result   }
     
     
-
 
     // Parameters for Trips
     const handleClick = (name) => {
@@ -29,11 +32,11 @@ function Home() {
 
     const handleChangeSetDate = (Event) => {
         setStartDate(Event.target.value)
+        console.log(dateConverter(StartDate, EndDate))
     }
 
     const handleChangeLocation = (Event) => {
         SetLocation(Event.target.value);
-        // console.log(Location);
     }
 
     const handleChangeEndDate = (Event) => {
@@ -44,7 +47,6 @@ function Home() {
 
     const handleChangeBudget = (Event) => {
         SetBudget(Event.target.value)
-        // console.log(Budget);
     }
     
 
@@ -57,7 +59,6 @@ function Home() {
             axios.get('http://localhost:8080/api/v1.1/countries/countrylist/budget?budget=' + Budget + '&location=' + Location)
             .then(res=>{
                 setTrips(res.data)
-                // console.log(Trips);
         
             })
             .catch(err => console.log(err))
@@ -164,14 +165,25 @@ function Home() {
         fetchCurrency();
     }, [])
 
+    // MealDB Gives a 404 error for an unknown reason, despite postman connecting with the same exact URL and params. Likely the API itself's problem.
 
+    // const [EgyptFood, setEgyptFood] = useState();
+    // useEffect ( () =>{
+    //   axios.get(`www.themealdb.com/api/json/v1/1/filter.php?a=Egyptian`)
+    //   .then(res=>{
+    //       setEgyptWeather(res.data)
+  
+    //   })
+    //   .catch(err => console.log(err))
+  
+    // }, [])    
 
 
 
   return (
     <div>
-        {/* API won't do more than 2 days ahead without a subscription, and only changes date at 1 day ahead, so we will choose the first option. */}
-        <h1>You can only plan for a maximum of 2 days ahead of the current day due to API limitations.</h1>
+        {/* API won't do more than 3 days ahead without a subscription, and only changes date at 1 day ahead, so we will choose the first option. */}
+        <h1>You can only plan for a maximum of 3 days ahead of the current day due to API limitations.</h1>
         <p>Start Date: {TodayDate} </p>
         {/* <input type='date' placeholder={TodayDate}  onChange={handleChangeSetDate}/> */}
 
@@ -251,6 +263,13 @@ function Home() {
                     {trip.countryname == "Russia" &&
                         <React.Fragment>
 
+                        <p> {RussiaWeather.forecast.forecastday[0].date}: {RussiaWeather.forecast.forecastday[0].day.avgtemp_c}°C </p>
+                        <h4> {RussiaWeather.forecast.forecastday[0].day.condition.text}</h4>
+                         <img 
+                            src={RussiaWeather.forecast.forecastday[0].day.condition.icon}
+                            alt="new"
+                        />
+                        
                         <p> {RussiaWeather.forecast.forecastday[1].date}: {RussiaWeather.forecast.forecastday[1].day.avgtemp_c}°C </p>
                         <h4> {RussiaWeather.forecast.forecastday[1].day.condition.text}</h4>
                          <img 
@@ -341,11 +360,6 @@ function Home() {
 
                     {trip.countryname == "Germany" &&
                         <React.Fragment>
-                         <p> Germany Weather: {GermanyWeather.current.temp_c}°C </p>
-                         <img 
-                            src={GermanyWeather.current.condition.icon}
-                            alt="new"
-                        />
 
                         <p> {GermanyWeather.forecast.forecastday[0].date}: {GermanyWeather.forecast.forecastday[0].day.avgtemp_c}°C </p>
                         <h4> {GermanyWeather.forecast.forecastday[0].day.condition.text}</h4>
@@ -405,6 +419,11 @@ function Home() {
                         </React.Fragment>
                         }
 
+                        {/* <p> {EgyptFood.meals[0].strMeal} </p>
+                        <img 
+                            src={EgyptFood.meals[0].strMealThumb}
+                            alt="new"
+                        /> */}
                         </React.Fragment>
                         
                     }
